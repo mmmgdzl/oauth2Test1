@@ -1,0 +1,112 @@
+spring:
+  application:
+    #服务名
+    name: XK-GATEWAY
+  profiles:
+    #当前启用的配置模块
+    active: dev
+  servlet:
+    #配置文件上传
+    multipart:
+      #配置文件最大上传大小
+      max-file-size: 100MB
+      #配置最大请求大小
+      max-request-size: 110MB
+#项目信息
+info:
+  app:
+    name: "@project.name@"
+    description: ${eureka.instance.instance-id}
+    version: "@project.version@"
+#网关
+zuul:
+  #路由映射
+  routes:
+    auth:
+      path: /auth/**
+      serviceId: xk-authority-api
+      sensitiveHeaders: "*"
+    re:
+      path: /re/**
+      serviceId: xk-resource-api
+      sensitiveHeaders: "*"
+    web:
+      path: /web/**
+      serviceId: xk-web
+      sensitiveHeaders: "*"
+  retryable: false
+  #忽略所有服务名
+  ignored-services: "*"
+  #负载均衡
+  ribbon:
+    eager-load:
+      enabled: true
+  #配置熔断时长
+  host:
+    connect-timeout-millis: 150000 #HTTP连接超时要比Hystrix的大
+    socket-timeout-millis: 600000   #socket超时
+  #在转发HEADER中添加代理说明
+  add-proxy-headers: true
+##配置负载均衡熔断时长
+#ribbon:
+#  ReadTimeout: 90000
+#  ConnectTimeout: 90000
+##配置熔断时长
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            #设置超时时间为100s
+#            timeoutInMilliseconds: 100000
+#服务注册到eureka地址
+eureka:
+  instance:
+    #服务实例名称
+    instance-id: 网关服务
+    #显示服务ip地址转换
+    prefer-ip-address: true
+  client:
+    #注册中心注册URL
+    service-url:
+      defaultZone: http://mmmgdzl:9879871221@${eureka.instance.hostname}:8000/eureka/
+    #注册到eureka上
+    register-with-eureka: true
+    #从服务中心获取注册信息
+    fetch-registry: true
+security:
+  oauth2:
+    resource:
+      prefer-token-info: false
+---
+server:
+  port: 8002
+spring:
+  profiles: dev
+  #配置redis
+  redis:
+    #配置redis服务器地址
+    host: 192.168.25.132
+    #配置redis服务器端口
+    port: 6379
+    #配置redis密码
+    password: 9879871221
+#服务注册到eureka地址
+eureka:
+  instance:
+    #服务主机地址
+    hostname: 127.0.0.1
+    #服务心跳包间隔
+    lease-renewal-interval-in-seconds: 2
+    #服务剔除等待时长
+    lease-expiration-duration-in-seconds: 5
+security:
+  oauth2:
+    client:
+      #accessToken获取URL
+      access-token-uri: http://localhost:${server.port}/auth/oauth/token
+      user-authorization-uri: http://localhost:${server.port}/auth/oauth/authorize
+    resource:
+      #获取用户权限信息的URL
+      user-info-uri:  http://localhost:${server.port}/auth/api/member

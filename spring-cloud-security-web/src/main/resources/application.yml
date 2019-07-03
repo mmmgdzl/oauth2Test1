@@ -1,0 +1,86 @@
+spring:
+  application:
+    name: XK-WEB
+  profiles:
+    active: dev
+  mvc:
+    #配置静态资源访问路径
+    static-path-pattern: /static/**
+  servlet:
+    #配置文件上传
+    multipart:
+      #配置文件最大上传大小
+      max-file-size: 100MB
+      #配置最大请求大小
+      max-request-size: 110MB
+feign:
+  hystrix:
+    enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            #设置超时时间为10s
+#            timeoutInMilliseconds: 10000
+info:
+  app:
+    name: "@project.name@"
+    description: ${eureka.instance.instance-id}
+    version: "@project.version@"
+#服务注册到eureka地址
+eureka:
+  instance:
+    #服务实例名称
+    instance-id: 网页服务
+    #显示服务ip地址转换
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://mmmgdzl:9879871221@${eureka.instance.hostname}:8000/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+security:
+  oauth2:
+    client:
+      grant-type: client_credentials
+    resource:
+      prefer-token-info: false
+---
+server:
+  port: 8200
+spring:
+  profiles: dev
+  thymeleaf:
+    cache: false
+  #配置redis
+  redis:
+    #配置redis服务器地址
+    host: 192.168.25.132
+    #配置redis服务器端口
+    port: 6379
+    #配置redis密码
+    password: 9879871221
+#服务注册到eureka地址
+eureka:
+  instance:
+    #服务主机地址
+    hostname: 127.0.0.1
+    #服务心跳包间隔
+    lease-renewal-interval-in-seconds: 2
+    #服务剔除等待时长
+    lease-expiration-duration-in-seconds: 5
+security:
+  oauth2:
+    client:
+      client-id: SYSTEM
+      client-secret: 123456
+      access-token-uri: http://localhost:8002/auth/oauth/token
+    resource:
+      user-info-uri: http://localhost:8002/auth/api/member

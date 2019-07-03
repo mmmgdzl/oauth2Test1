@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/web/static/js/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+    ThisIsIndex(<span id="accessTokenContent"></span>)
+    <input type="button" value="点击获取ACCESS_TOKEN" onclick="getAccessToken()" />
+    <input type="button" value="点击获取跳转" onclick="toNext()" />
+    <script>
+        var accessToken;
+        function getAccessToken() {
+            $.ajax({
+                url: "http://localhost:8002/auth/oauth/token?username=admin&password=123456&grant_type=password&client_id=USER&client_secret=123456",
+                dataType: "json",
+                type: "POST",
+                success: function(result) {
+                    alert("获取accessToken成功!");
+                    //存储accessToken
+                    $.ajax({
+                        url: "http://localhost:8002/store",
+                        data: {accessToken: result.access_token, expireTime:result.expires_in},
+                        type: "POST",
+                        // dataType: "json",
+                        success: function(res) {
+                            if(res != '') {
+                                alert("存储成功!");
+                                $("#accessTokenContent").html(result.access_token + "-" + res);
+                                accessToken = result.access_token;
+                            } else {
+                                alert("存储失败!");
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function toNext() {
+            window.open("/web/next?access_token=" + accessToken);
+        }
+    </script>
+</body>
+</html>

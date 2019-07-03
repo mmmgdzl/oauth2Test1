@@ -1,0 +1,30 @@
+server:
+  port: 8000
+spring:
+  profiles:
+    active: dev
+  security:
+    user:
+      name: mmmgdzl
+      password: 9879871221
+eureka:
+  client:
+    service-url:
+      #客户端注册地址
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    #开发单机版注册中心, 无需将自己注册到注册中心上去
+    register-with-eureka: false
+    #客户端是否需要宠Eureka服务器获取Eureka上的注册信息
+    fetch-registry: false
+  server:
+    eviction-interval-timer-in-ms: 1000
+---
+spring:
+  profiles: dev
+eureka:
+  instance:
+    #服务地址
+    hostname: 127.0.0.1
+  server:
+    #配置Eureka自我保护机制
+    enable-self-preservation: false
